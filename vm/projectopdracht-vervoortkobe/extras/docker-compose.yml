@@ -1,0 +1,137 @@
+version: "3"
+services:
+  portainer:
+    image: portainer/portainer-ce:latest
+    command: -H unix:///var/run/docker.sock
+    restart: always
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "portainer-data:/data"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.portainer.rule=Host(`${PORTAINER_HOST}`)"
+      - "traefik.http.routers.portainer.tls=true"
+      - "traefik.http.routers.portainer.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.portainer.entrypoints=websecure"
+      - "traefik.http.services.portainer.loadbalancer.server.port=9000"
+      - "traefik.http.routers.portainer.service=portainer"
+    networks:
+      - proxy
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - 9090:9090
+    volumes:
+      - "/etc/prometheus:/config"
+      - "prometheus-data:/prometheus"
+    labels:
+      - "traefik.http.routers.prometheus.rule=HOST(`${PROMETHEUS_HOST}`)"
+      - "traefik.http.routers.prometheus.tls=true"
+      - "traefik.http.routers.prometheus.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.prometheus.entrypoints=websecure"
+      - "traefik.http.services.prometheus.loadbalancer.server.port=9090"
+      - "traefik.http.routers.prometheus.service=prometheus"
+      - "--prometheus.server-url=${PROMETHEUS_HOST}"
+      - "--prometheus.query.support-spanmetrics-connector=true"
+    restart: unless-stopped
+    command:
+      - "--config.file=/config/prometheus.yml"
+    networks:
+      - proxy
+
+  grafana:
+    image: grafana/grafana-oss:latest
+    container_name: grafana
+    ports:
+      - 4444:3000
+    volumes:
+      - "grafana-data:/var/lib/grafana"
+    labels:
+      - "traefik.http.routers.grafana.rule=HOST(`${GRAFANA_HOST}`)"
+      - "traefik.http.routers.grafana.tls=true"
+      - "traefik.http.routers.grafana.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.grafana.entrypoints=websecure"
+      - "traefik.http.services.grafana.loadbalancer.server.port=3000"
+      - "traefik.http.routers.grafana.service=grafana"
+    restart: unless-stopped
+    networks:
+      - proxy
+
+  node_exporter:
+    image: quay.io/prometheus/node-exporter:v1.5.0
+    container_name: node_exporter
+    command: "--path.rootfs=/host"
+    ports:
+      - 9100:9100
+    volumes:
+      - "/:/host:ro,rslave"
+    labels:
+      - "traefik.http.routers.nodeexporter.rule=HOST(`${NODE_EXPORTER_HOST}`)"
+      - "traefik.http.routers.nodeexporter.tls=true"
+      - "traefik.http.routers.nodeexporter.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.nodeexporter.entrypoints=websecure"
+      - "traefik.http.services.nodeexporter.loadbalancer.server.port=9100"
+      - "traefik.http.routers.nodeexporter.service=nodeexporter"
+    pid: host
+    restart: unless-stopped
+    networks:
+      - proxy
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.47.0
+    container_name: cadvisor
+    ports:
+      - 8082:8080
+    volumes:
+      - "/:/rootfs:ro"
+      - "/var/run:/var/run:ro"
+      - "/sys:/sys:ro"
+      - "/var/lib/docker/:/var/lib/docker:ro"
+      - "/dev/disk/:/dev/disk:ro"
+    labels:
+      - "traefik.http.routers.cadvisor.rule=HOST(`${CADVISOR_HOST}`)"
+      - "traefik.http.routers.cadvisor.tls=true"
+      - "traefik.http.routers.cadvisor.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.cadvisor.entrypoints=websecure"
+      - "traefik.http.services.cadvisor.loadbalancer.server.port=8080"
+      - "traefik.http.routers.cadvisor.service=cadvisor"
+    devices:
+      - "/dev/kmsg"
+    privileged: true
+    restart: unless-stopped
+    networks:
+      - proxy
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    ports:
+      - 16686:16686 # Jaeger UI
+      - 6831:6831/udp # Jaeger Agent
+      - 6832:6832/udp # Jaeger Compact Thrift
+      - 5778:5778 # Jaeger Thrift HTTP
+    labels:
+      - "traefik.http.routers.jaeger.rule=HOST(`${JAEGER_HOST}`)"
+      - "traefik.http.routers.jaeger.tls=true"
+      - "traefik.http.routers.jaeger.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.jaeger.entrypoints=websecure"
+      - "traefik.http.services.jaeger.loadbalancer.server.port=16686"
+      - "traefik.http.routers.jaeger.service=jaeger"
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    external: true
+    name: traefik
+  jaeger_network:
+    external: true
+    name: jaeger
+
+volumes:
+  portainer-data:
+  prometheus-data:
+    driver: local
+  grafana-data:
+    driver: local

@@ -1,0 +1,9 @@
+- /traefik > maak traefik.yml
+- /BaseApp > wijzig docker-compose.yml
+- /traefik > maak docker-compose.yml
+/traefik > docker network ls
+/traefik > docker network create traefik
+/traefik > docker compose up -d
+/BaseApp > docker compose up -d
+(/traefik > docker compose down)
+(/BaseApp > docker compose down)

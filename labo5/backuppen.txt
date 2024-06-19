@@ -1,0 +1,5 @@
+docker run --rm \
+	-v db-volume:/db:ro \
+	-v $(pwd):/backup \
+	debian \
+	tar cvf /backup/backup.tar /db

@@ -1,0 +1,26 @@
+pipeline {
+    agent { label 's141662.devops-ap.be' }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                // Clone the git repository
+                git credentialsId: 'jenkins-server', branch: 'main', url: 'git@github.com:AP-IT-GH/projectopdracht-vervoortkobe.git'
+            }
+        }
+
+        stage('Build and deploy') {
+            environment{
+                MYSQL_DB = credentials('webapp-MYSQL_DB')
+                MYSQL_ROOT_PWD = credentials('webapp-MYSQL_ROOT_PWD')
+                MYSQL_USER = credentials('webapp-MYSQL_USER')
+                MYSQL_PWD = credentials('webapp-MYSQL_PWD')
+                TODO_HOST = credentials('webapp-TODO_HOST')
+            }
+            steps{
+                // Commands to deploy app on server
+                sh "docker compose up --build -d"
+            }
+        }
+    }
+}

@@ -1,0 +1,26 @@
+/BaseApp > docker compose down
+/traefik > docker compose down
+/BaseApp > vim docker-compose.yml
+    Zet variables om naar .env
+/BaseApp > touch .env && vim .env
+    Zet variables er in
+/BaseApp > vim docker-compose.yml
+    Vervang variables door .env variables
+      var zelfde naam als .env var? -> zelfde schrijven
+      anders? -> ${.ENV VAR NAME}
+/BaseApp > wijzig docker-compose.yml
+    Zet database network er in
+/BaseApp > touch .gitignore && vim .gitignore
+    .env
+/BaseApp > cp .env .example.env
+    Pas .env variables aan naar <> voor template example
+/BaseApp > ls -la
+    Bekijk .files
+/BaseApp > vim docker-compose.yml
+    Voeg labels toe aan backend todo-api-service
+      PathPrefix(`/api`)
+    Voeg !PathPrefix(`/api`) toe aan labels frontend
+    Pas networks aan frontend en backend! (database, backend, frontend, proxy)
+/traefik > docker compose up -d
+/BaseApp > docker compose up -d
+docker exec -it <nginx_container_name> bash

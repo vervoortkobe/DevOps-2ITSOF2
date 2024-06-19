@@ -1,0 +1,80 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <style>
+        .container {
+            margin-left: auto;
+            margin-right: auto;
+            max-width: 1024px;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            text-align: left;
+            padding: 8px;
+        }
+        tr {
+            border-bottom: 1px solid #ddd;
+            cursor: pointer;
+        }
+        .row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+    
+        <div class="row">
+            <h1>Acme blog Admin</h1>
+            <a href="/admin/edit.html">Maak nieuwe post</a>
+        </div>
+        
+
+        <table style="width: 100%">
+            <thead>
+                <th>Id</th>
+                <th>Titel</th>
+                <th>Datum</th>
+            </thead>
+            <tbody id="posts">
+            </tbody>
+        </table>
+
+    </div>
+
+    <script>
+
+        fetch('/api/posts')
+        .then((posts) => posts.json())
+        .then((posts) => updatePostsTable(posts))
+        .catch((err) => {
+            console.log('Error', errr);
+        })
+
+        function updatePostsTable(posts) {
+            const tbody = document.getElementById('posts');
+            tbody.innerHTML = '';
+            for (let post of posts) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${post.id}</td>
+                    <td>${post.title}</td>
+                    <td>${post.date}</td>
+                `;
+                // make post id clickable and link to edit page
+                tr.addEventListener('click', () => {
+                    window.location.href = `/admin/edit.html?id=${post.id}`;
+                })
+                tbody.appendChild(tr);
+            }
+        }
+    </script>
+</body>
+
+</html>

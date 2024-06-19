@@ -1,0 +1,20 @@
+version: "3.3"
+services:
+  web:
+    image: odoo:17.0
+    ports:
+      - "8069:8069"
+    volumes:
+      - ./custom_addons:/mnt/extra-addons
+  db:
+    image: postgres:14.1-alpine
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=odoo
+      - POSTGRES_PASSWORD=odoo
+    ports:
+      - "5432:5432"
+    volumes:
+      - /var/lib/postgresql/data
+      - ./db/scripts:/docker-entrypoint-initdb.d

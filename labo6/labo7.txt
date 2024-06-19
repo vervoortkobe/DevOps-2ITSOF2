@@ -1,0 +1,19 @@
+https://github.com/DevOpsAP-22-23/BaseApp.git
+BACKEND:
+	/BaseApp/backend > Dockerfile: zie DOCKERFILE
+	/BaseApp/backend > docker build -t backend .
+	/BaseApp/backend > docker run -p 3000:3000 backend
+		om te testen
+		docker stop & docker remove nadien
+	
+FRONTEND:
+	/BaseApp > docker-compose.yml: zie DOCKER-COMPOSE.YML
+	/BaseApp > docker run --name frontend -v "./frontend/nginx.conf:/frontend/etc/nginx/nginx.conf:ro" -v ".:/var/www/static:ro" nginx:1.22
+		om te testen
+		docker stop & docker remove nadien
+	/BaseApp > docker compose up -d
+	/BaseApp > docker compose logs
+    curl http://<s-nr; bij mij s141662>.devops-ap.be:3000/api/todos
+		/BaseApp > docker compose down
+		/BaseApp > docker volume ls
+		/BaseApp > docker rm <id> frontend

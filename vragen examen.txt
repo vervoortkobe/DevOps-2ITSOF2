@@ -1,0 +1,4 @@
+POORT ZIJN OP WELKE LAAG?
+	laag 4 transportlaag
+WELKE PROTOCOLS ZITTEN DAAR DAN OP?
+	tcp udp

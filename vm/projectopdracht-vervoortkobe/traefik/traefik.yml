@@ -1,0 +1,34 @@
+entryPoints:
+  web:
+    address: ":80"
+    http:
+      redirections:
+        entrypoint:
+          to: websecure
+          scheme: https
+
+  websecure:
+    address: ":443"
+
+certificatesResolvers:
+  letsencrypt:
+    acme:
+      email: vervoortkobe@outlook.com
+      storage: /ssl-certs/acme.json
+      httpChallenge:
+        entryPoint: web
+providers:
+  docker:
+    network: traefik
+api:
+  dashboard: true
+
+tracing:
+  jaeger:
+    samplingServerURL: http://vervoortkobe.be.eu.org/sampling
+
+metrics:
+  prometheus: true
+
+accessLog:
+  filePath: "/traefik.access.log"

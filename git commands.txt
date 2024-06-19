@@ -1,0 +1,25 @@
+GIT COMMANDS:
+  - git init
+  - git clone <link to repo>
+  - git add <bestand>
+  - git commit -m "<commit message>"
+  - git log
+  - git branch
+  - git checkout <branch name>
+  - git checkout <commit ID>
+  - git checkout -b <branch>
+  - git log --graph --all
+  - git merge <branch name>
+  - git remote add origin <link to repo>
+  - git remote remove origin
+  - git pull [<remote repo> <remote branch>]
+  - git push
+  - git config --global user.name "<naam>"
+  - git config --global user.email "<mail>"
+  - git rebase
+  - git reflog
+  - git cherry pick
+  - git stash
+  - git blame
+  - git bisect
+  

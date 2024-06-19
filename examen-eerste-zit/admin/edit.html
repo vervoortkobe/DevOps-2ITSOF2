@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <style>
+        .container {
+            margin-left: auto;
+            margin-right: auto;
+            max-width: 1024px;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            text-align: left;
+            padding: 8px;
+        }
+        tr {
+            border-bottom: 1px solid #ddd;
+            cursor: pointer;
+        }
+        input, textare {
+            width: 100%
+        }
+    </style>
+    <script src="https://cdn.ckeditor.com/ckeditor5/35.4.0/classic/ckeditor.js"></script>
+    
+</head>
+<body>
+    <!-- Edit an individual blog post -->
+    <div class="container">
+        <h1>Acme blog Admin</h1>
+        <form id="edit-form">
+            <p>
+            <label for="title">Title</label>
+            <input type="text" name="title" id="title" />
+        </p>
+        <p>
+            <label for="date">Date</label>
+            <input type="text" name="date" id="date" />
+        </p>
+        <p>
+            <label for="content">Content</label><br />
+            <textarea name="content" id="content"></textarea>
+        </p>
+        <br />
+        <br />
+            <input type="submit" value="Bewaren" />
+        </form>
+    </div>
+    <script>
+       
+    </script>
+    <script>
+        // get the post id from the url
+        const urlParams = new URLSearchParams(window.location.search);
+        const postId = urlParams.get('id');
+
+        let editor;
+
+        if (postId) {
+            fetch(`/api/posts/${postId}`)
+            .then((post) => post.json())
+            .then((post) => {
+                // fill the form with the post data
+                document.getElementById('title').value = post.title;
+                document.getElementById('content').value = post.content;
+                document.getElementById('date').value = post.date;
+
+                
+                ClassicEditor
+                .create( document.querySelector( '#content' ) )
+                .then( newEditor => {
+                    editor = newEditor;
+                } )
+                .catch( error => {
+                    console.error( error );
+                } );
+
+                document.getElementById('edit-form').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    editor.updateSourceElement() // update the textarea
+                    // get the form data
+                    const title = document.getElementById('title').value;
+                    const content = document.getElementById('content').value;
+                    const date = document.getElementById('date').value;
+                    // send the data to the api
+                    fetch(`/api/posts/${postId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            title,
+                            content,
+                            date
+                        })
+                    })
+                    .then((res) => {
+                        if (res.status === 200) {
+                            alert('Post bijgewerkt, terug naar overzicht');
+                            window.location.replace('/admin/');
+                        } else {
+                            alert('Error updating post');
+                        }
+                    })
+                    .catch((err) => {
+                        console.log('Error', err);
+                    })
+                })
+            })
+        } else {
+            ClassicEditor
+            .create( document.querySelector( '#content' ) )
+            .then( newEditor => {
+                editor = newEditor;
+            } )
+            .catch( error => {
+                console.error( error );
+            } );
+
+            document.getElementById('edit-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                editor.updateSourceElement() // update the textarea
+                // get the form data
+                const title = document.getElementById('title').value;
+                const content = document.getElementById('content').value;
+                const date = document.getElementById('date').value;
+                // send the data to the api
+                fetch('/api/posts', {
+                    method: 'pOST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        title,
+                        content,
+                        date
+                    })
+                })
+                .then((res) => {
+                    if (res.status === 200) {
+                        alert('Post aangemaakt, terug naar overzicht');
+                        window.location.replace('/admin/');
+                    } else {
+                        alert('Error updating post');
+                    }
+                })
+                .catch((err) => {
+                    console.log('Error', err);
+                })
+            })
+
+        }
+       
+    </script>
+</body>
+</html>

@@ -1,0 +1,34 @@
+version: "3"
+services:
+  todo-api-service:
+    build:
+      context: ./backend
+    environment:
+      - STORAGE=mysql
+      - MYSQL_HOST=db
+      - MYSQL_USER=labo7
+      - MYSQL_PWD=DitIsGoed!
+      - MYSQL_DB=labo7
+  frontend:
+    image: nginx:1.22
+    volumes:
+      - "./frontend/nginx.conf:/etc/nginx/nginx.conf:ro"
+      - "./frontend:/var/www/static:ro"
+    ports:
+      - "80:80"
+    depends_on:
+      - todo-api-service
+
+  db:
+    image: mysql
+    environment:
+      - "MYSQL_ROOT_PASSWORD=DitIsGoed!"
+      - "MYSQL_DATABASE=labo7"
+      - "MYSQL_USER=labo7"
+      - "MYSQL_PASSWORD=DitIsGoed!"
+    volumes:
+      - "db-volume:/var/lib/mysql"
+      - "./init.sql:/docker-entrypoint-initdb.d/1.sql:ro"
+
+volumes:
+  db-volume:

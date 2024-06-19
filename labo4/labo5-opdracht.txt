@@ -1,0 +1,76 @@
+docker run \
+	-d \
+	--name my-mysql \
+	-e MYSQL_ROOT_PASSWORD=DitIsGoed \
+	-e MYSQL_DATABASE=DevOps \
+	-e MYSQL_USER=dbUser \
+	-e MYSQL_PASSWORD=DitIsGoed \
+	-v db-volume:/var/lib/mysql \
+	mysql
+docker exec \
+	-it \
+	my-mysql \
+	bash
+mysql -udbUser -p
+DitIsGoed
+cd /var/lib/docker/volumes/db-volume/_data
+
+docker run \
+	-d \
+	--name myadmin \
+	--link my-mysql:db \
+	-p 80:80 \
+	phpmyadmin
+	
+docker run \
+	--rm \
+	-v db-volume:/databank \
+	-v $(pwd):/backup \
+	debian \
+	tar cvf /backup/db.tar \
+	/databank
+	
+docker volume create pg-data
+docker run \
+	--name pg \
+	-d \
+	-v pg-data:/var/lib/postgresql \
+	-e POSTGRES_PASSWORD=DitIsGoed \
+	postgres
+psql postgres postgres
+
+docker create volume mongo-data
+docker run \
+	--name mongo \
+	-d \
+	-v mongo-data:/etc/mongo \
+	-e MONGO_INITDB_ROOT_USERNAME=mongoadmin \
+	-e MONGO_INITDB_ROOT_PASSWORD=secret \
+	mongo
+	
+docker create volume redis-data
+docker run \
+	--name redis \
+	-d \
+	-v redis-data:/data \
+	redis
+	
+docker volume create sql-data
+docker run \
+	-d \
+	-e "ACCEPT_EULA=Y" \
+	-e "MYSSQL_SA_PASSWORD=mySuperStrongSAPassword!"
+	-d \
+	-v mssql-data:/var/opt/mssql/data \
+	mcr.microsoft.com/mssql/server
+	
+docker run \
+	--name nginx \
+	-d \
+	-v $(pwd)/html:/usr/share/nginx/html:ro \
+	-p 80:80 \
+	nginx
+docker exec \
+	-it \
+	nginx \
+	/bin/bash

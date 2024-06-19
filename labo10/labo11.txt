@@ -1,0 +1,41 @@
+1. maak Jenkins mapje
+2. maak docker-compose.yml
+  zie docker-compose
+3. docker compose up -d
+4. admin password
+  vinden: docker compose logs
+    0590d37d94134390a9bdfb6dedb14479s
+5. maak ssh creds aan
+  ssh-creds mapje
+  ssh-keygen
+    jenkins-server
+  ga naar Manage Jenkins -> Credentials
+    scope selecteren system/global creds
+      ssh username PRIVATE key
+      scope: global
+      id: jenkins-server
+      desc:
+      username: jenkins
+      enter directly: PRIVATE key
+6. java installeren
+  apt install default-jre
+7. maak jenkins user aan
+  useradd -m -s /bin/bash jenkins
+8. PUBLIC ssh key in authorized_keys plakken van jenkins user
+  su jenkins
+  mkdir .ssh
+  plak ssh PUBLIC key in authorized_keys
+9. maak nieuwe node aan (manage jenkins: nodes)
+  name: s141662.devops-ap.be
+  permanent agent
+10. new node
+  name: s141662.devops-ap.be
+  remote root dir: /home/jenkins
+  labels: s141662.devops-ap.be
+  usage: as much as possible
+  launch method: via ssh
+    host: s141662.devops-ap.be
+    creds: jenkins
+    host key: none verifying verification strat
+    save
+11. voorbeeld pipeline script
