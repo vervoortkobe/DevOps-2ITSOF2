@@ -1,0 +1,25 @@
+version: "3"
+services:
+  traefik-proxy:
+    image: traefik:v2.10
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - "./traefik.yml:/etc/traefik/traefik.yml"
+      - "./letsencrypt-certs:/ssl-certs"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      # - "./passwd:/etc/traefik/passwd"
+    labels:
+      - "traefik.http.routers.dashboard.rule=Host(`${TRAEFIK_HOST}`)"
+      - "traefik.http.routers.dashboard.service=api@internal"
+      # - "traefik.http.routers.dashboard.middlewares=auth"
+      # - "traefik.http.middlewares.auth.basicauth.users="
+      - "traefik.http.routers.dashboard.tls=true"
+      - "traefik.http.routers.dashboard.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.dashboard.entrypoints=websecure"
+
+networks:
+  default:
+    external: true
+    name: traefik

@@ -1,0 +1,23 @@
+version: "3"
+services:
+  jenkins:
+    image: jenkins/jenkins:jdk11
+    volumes:
+      - jenkins-data:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./ssh:/home/jenkins/.ssh
+    labels:
+      - "traefik.http.routers.jenkins.rule=Host (`${JENKINS_HOST}`)"
+      - "traefik.http.routers.jenkins.tls=true"
+      - "traefik.http.routers.jenkins.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.jenkins.entrypoints=websecure"
+      - "traefik.http.services.jenkins.loadbalancer.server.port=8080"
+      - "traefik.http.routers.jenkins.service=jenkins"
+    networks:
+      - proxy
+volumes:
+  jenkins-data:
+networks:
+  proxy:
+    external: true
+    name: traefik
